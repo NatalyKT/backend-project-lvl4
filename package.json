@@ -1,6 +1,7 @@
 {
    "name": "@hexlet/code",
    "version": "0.1.0",
+   "type": "module",
    "description": "Tasks manager: fastify-nodejs-application",
    "main": "server/plugin.js",
    "engines": {
