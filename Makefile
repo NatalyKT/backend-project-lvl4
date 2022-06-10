@@ -13,7 +13,7 @@ prepare:
 	cp -n .env.example .env || true
 
 start:
-	heroku local -f Procfile.dev
+	heroku local -f Procfile
 
 start-backend:
 	npm start -- --watch --verbose-watch --ignore-watch='node_modules .git .sqlite'
@@ -22,7 +22,10 @@ start-frontend:
 	npx webpack --watch --progress
 
 lint:
-	npx eslint .
+	npx eslint . --fix
 
 test:
 	npm test -s
+
+test-coverage:
+	npx jest --coverage --coverageProvider=v8
