@@ -2,55 +2,55 @@
 
 export default {
   translation: {
-    appName: "Task Manager",
+    appName: 'Task Manager',
     flash: {
       session: {
         create: {
-          success: "Вы залогинены",
-          error: "Неправильный емейл или пароль",
+          success: 'Вы залогинены',
+          error: 'Неправильный емейл или пароль',
         },
         delete: {
-          success: "Вы разлогинены",
+          success: 'Вы разлогинены',
         },
       },
       users: {
         create: {
-          error: "Не удалось зарегистрировать",
-          success: "Пользователь успешно зарегистрирован",
+          error: 'Не удалось зарегистрировать',
+          success: 'Пользователь успешно зарегистрирован',
         },
       },
-      authError: "Доступ запрещён! Пожалуйста, авторизируйтесь.",
+      authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
     layouts: {
       application: {
-        users: "Пользователи",
-        signIn: "Вход",
-        signUp: "Регистрация",
-        signOut: "Выход",
+        users: 'Пользователи',
+        signIn: 'Вход',
+        signUp: 'Регистрация',
+        signOut: 'Выход',
       },
     },
     views: {
       session: {
         new: {
-          signIn: "Вход",
-          submit: "Войти",
+          signIn: 'Вход',
+          submit: 'Войти',
         },
       },
       users: {
-        id: "ID",
-        email: "Email",
-        createdAt: "Дата создания",
+        id: 'ID',
+        email: 'Email',
+        createdAt: 'Дата создания',
         new: {
-          submit: "Сохранить",
-          signUp: "Регистрация",
+          submit: 'Сохранить',
+          signUp: 'Регистрация',
         },
       },
       welcome: {
         index: {
-          hello: "Welcome on board!",
+          hello: 'Welcome on board!',
           description:
             'Training project 4 for the profession "Node.js developer"',
-          more: "Learn more",
+          more: 'Learn more',
         },
       },
     },
