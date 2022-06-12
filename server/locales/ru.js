@@ -24,6 +24,9 @@ export default {
     layouts: {
       application: {
         users: 'Пользователи',
+        statuses: 'Статусы',
+        labels: 'Метки',
+        tasks: 'Задачи',
         signIn: 'Вход',
         signUp: 'Регистрация',
         signOut: 'Выход',
@@ -47,7 +50,7 @@ export default {
         fullName: 'Полное имя',
         email: 'Email',
         createdAt: 'Дата создания',
-        options: 'Опции',
+        options: 'Действия',
         new: {
           submit: 'Сохранить',
           signUp: 'Регистрация',

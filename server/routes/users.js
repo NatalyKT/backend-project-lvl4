@@ -32,7 +32,7 @@ export default (app) => {
         reply.redirect(app.reverse('root'));
       } catch (error) {
         const { data } = error;
-        req.flash('error', i18next.t('flash.users.create.error'));
+        req.flash('info', i18next.t('flash.users.create.error'));
         reply.statusCode = 422;
         reply.render('users/new', { user: req.body.data, errors: data });
       }

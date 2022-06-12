@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fastifyStatic from 'fastify-static';
 import fastifyErrorPage from 'fastify-error-page';
-
+import Rollbar from 'rollbar';
 import pointOfView from 'point-of-view';
 import fastifyFormbody from 'fastify-formbody';
 import fastifySecureSession from 'fastify-secure-session';
@@ -28,7 +28,6 @@ import FormStrategy from './lib/passportStrategies/FormStrategy.js';
 const __dirname = fileURLToPath(path.dirname(import.meta.url));
 
 const mode = process.env.NODE_ENV || 'development';
-// const isDevelopment = mode === 'development';
 
 const setUpViews = (app) => {
   const helpers = getHelpers(app);
@@ -61,7 +60,7 @@ const setupLocalization = async () => {
   await i18next.init({
     lng: 'ru',
     fallbackLng: 'en',
-    // debug: isDevelopment,
+
     resources: {
       ru,
     },
@@ -110,6 +109,13 @@ const registerPlugins = (app) => {
     models,
   });
 };
+
+// const setupRollbar = (app) => {
+//   const rollbar = new Rollbar({
+//     accessToken: process.env.ROLLBAR_TOKEN,
+//     captureUncaught: true,
+//     captureUnhandledRejections: true,
+//   });
 
 // eslint-disable-next-line no-unused-vars
 export default async (app, options) => {
