@@ -1,5 +1,4 @@
 ---
-
 root: true
 
 parserOptions:
@@ -10,8 +9,8 @@ plugins:
   - jest
 
 extends:
-  - 'airbnb-base'
-  - 'plugin:jest/recommended'
+  - "airbnb-base"
+  - "plugin:jest/recommended"
 
 # https://eslint.org/docs/user-guide/configuring#specifying-environments
 env:
@@ -29,6 +28,6 @@ rules:
     - error
     - props: true
       ignorePropertyModificationsFor:
-      - req
-      - reply
+        - req
+        - reply
   no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]
