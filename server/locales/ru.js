@@ -6,11 +6,11 @@ export default {
     flash: {
       session: {
         create: {
-          success: 'Вы залогинены',
-          error: 'Неправильный емейл или пароль',
+          success: 'Успешный вход в систему',
+          error: 'Неверный емейл или пароль',
         },
         delete: {
-          success: 'Вы разлогинены',
+          success: 'Успешный выход из системы',
         },
       },
       users: {
@@ -36,10 +36,18 @@ export default {
           submit: 'Войти',
         },
       },
+      placeholders: {
+        firstName: 'Имя',
+        lastName: 'Фамилия',
+        email: 'Email',
+        password: 'Пароль',
+      },
       users: {
         id: 'ID',
+        fullName: 'Полное имя',
         email: 'Email',
         createdAt: 'Дата создания',
+        options: 'Опции',
         new: {
           submit: 'Сохранить',
           signUp: 'Регистрация',
@@ -47,7 +55,7 @@ export default {
       },
       welcome: {
         index: {
-          hello: 'Welcome on board!',
+          hello: 'Task Manager',
           description:
             'Training project 4 for the profession "Node.js developer"',
           more: 'Learn more',

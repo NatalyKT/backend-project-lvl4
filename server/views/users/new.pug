@@ -7,11 +7,11 @@ block content
 			.col-12.col-md-6.d-flex.align-items-center
 			.form-signin.text-center
 				i.bi.bi-person-square(style='font-size: 3rem; color: DodgerBlue;')
-				h1.h3.mb-3.fw-normal= t('views.users.new.signUp')
+				h1.h3.mb-3.fw-bold= t('views.users.new.signUp')
 				+formFor()(action=route('session') method='post')
-					+input(user, 'First Name', t('views.placeholders.firstName'), errors)(type='text')
-					+input(user, 'Last Name', t('views.placeholders.lastName'), errors)(type='text')
 					+input(user, 'Email', t('views.placeholders.email'),  errors)(type='text')
 					+input(user, 'Password', t('views.placeholders.password'), errors)(type='password')
+					+input(user, 'First Name', t('views.placeholders.firstName'), errors)(type='text')
+					+input(user, 'Last Name', t('views.placeholders.lastName'), errors)(type='text')
 					+submit(user)(value=t('views.users.new.submit'))
-					p.mt-3.mb-3.text-muted &copy; 2022 Hexlet Ltd.
+					p.my-3.text-muted &copy; 2022 Hexlet Ltd.

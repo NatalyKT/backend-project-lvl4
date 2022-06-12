@@ -8,7 +8,7 @@ mixin input(entity, propertyName, placeholder, errors = {})
   - propertyErrors = _.get(errors, propertyName)
   - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
-  .form-floating.mb-2(class=(errors[propertyName] && 'has-danger'))
+  .form-floating.my-3(class=(errors[propertyName] && 'has-danger'))
     input(
       id= inputId
       name=getInputName(propertyName)
@@ -18,7 +18,7 @@ mixin input(entity, propertyName, placeholder, errors = {})
     )&attributes(attributes)
     label(
       for= inputId
-    )= propertyName
+    )= placeholder
     if !_.isEmpty(propertyErrors)
       .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
 

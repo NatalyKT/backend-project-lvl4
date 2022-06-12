@@ -1,15 +1,26 @@
 extends ../layouts/application.pug
 
 block content
-  table.table.table-striped
-    thead
-      tr
-        th= t('views.users.id')
-        th= t('views.users.email')
-        th= t('views.users.createdAt')
-    tbody
-      each user in users
-        tr
-          td= user.id
-          td= user.email
-          td= formatDate(user.createdAt)
+  table.table.caption-top
+    caption
+    .text-dark.fs-4.fw-bold= t('layouts.application.users')
+      .table-striped.table-hover.table-light
+      thead
+
+          tr
+          th= t('views.users.id')
+          th= t('views.users.fullName')
+          th= t('views.users.email')
+          th= t('views.users.createdAt')
+          if isAuthenticated()
+            th= t('views.users.options')
+      tbody
+        each user in users
+          tr
+            td= user.id
+            td=user.fullName
+            td= user.email
+            td= formatDate(user.createdAt)
+            if isAuthenticated()
+            td
+              .d-flex.flex-wrap

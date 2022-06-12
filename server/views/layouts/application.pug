@@ -3,13 +3,12 @@ include ../mixins/forms.pug
 doctype html
 html(lang="en")
   head
-    title Hexlet Fastify Boilerplate
+    title Task Manager
     script(src=assetPath('main.js'))
     link(href=assetPath('main.css') rel="stylesheet")
-    link(rel='stylesheet' type='text/css' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css')
     meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
   body.d-flex.flex-column.min-vh-100
-    nav.navbar.navbar-expand-lg.navbar-light.bg-light.mb-3
+    nav.navbar.navbar-expand-lg.navbar-light.bg-gradient.mb-3
       .container-fluid
         a.navbar-brand(href=route('root'))= t('appName')
         button.navbar-toggler(data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent")
@@ -45,7 +44,6 @@ footer.text-center.text-lg-start.bg-light.text-muted
     // Left
     .me-5.d-none.d-lg-block
       span Get connected with us on social networks:
-    // Left
     // Right
     div
       a.me-4.text-reset(href='https://t.me/nataly_kt')
