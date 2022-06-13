@@ -8,7 +8,7 @@ block content
 			.form-signin.text-center
 				i.bi.bi-key(style='font-size: 3rem; color: DodgerBlue;')
 				h1.h3.mb-3.fw-bold= t('views.session.new.signIn')
-				+formFor()(action=route('session') method='post')
+				+formFor()(action=route('session#create') method='post')
 					+input(signInForm, 'Email', t('views.placeholders.email'), errors)(type='text')
 					+input(signInForm, 'Password', t('views.placeholders.password'))(type='password')
 					+submit(signInForm)(value=t('views.session.new.submit'))

@@ -8,7 +8,7 @@ block content
 			.form-signin.text-center
 				i.bi.bi-person-square(style='font-size: 3rem; color: DodgerBlue;')
 				h1.h3.mb-3.fw-bold= t('views.users.new.signUp')
-				+formFor()(action=route('session') method='post')
+				+formFor()(action=route('users#create') method='post')
 					+input(user, 'Email', t('views.placeholders.email'),  errors)(type='text')
 					+input(user, 'Password', t('views.placeholders.password'), errors)(type='password')
 					+input(user, 'First Name', t('views.placeholders.firstName'), errors)(type='text')
