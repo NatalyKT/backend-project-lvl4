@@ -8,29 +8,34 @@ import { getTestData, prepareData, signIn } from './helpers/index.js';
 describe('test statuses CRUD', () => {
   let app;
   let knex;
+  let status;
   let models;
-  let cookie;
-  const testData = getTestData();
+  let testData;
+  let cookies;
 
   beforeAll(async () => {
     // @ts-ignore
     app = fastify({ logger: { prettyPrint: true } });
     await init(app);
-    knex = app.objection.knex;
     models = app.objection.models;
-    await knex.migrate.latest();
+    knex = app.objection.knex;
+    testData = getTestData();
   });
 
   beforeEach(async () => {
+    await knex.migrate.latest();
     await prepareData(app);
-    cookie = await signIn(app, testData.users.existing);
+    status = await models.status
+      .query()
+      .findOne({ name: testData.statuses.existing.name });
+    cookies = await signIn(app, testData.users.existing);
   });
 
   it('index', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('statuses#index'),
-      cookies: cookie,
+      cookies,
+      url: app.reverse('statuses'),
     });
 
     expect(response.statusCode).toBe(200);
@@ -39,92 +44,93 @@ describe('test statuses CRUD', () => {
   it('new', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('statuses#new'),
-      cookies: cookie,
+      cookies,
+      url: '/statuses/new',
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('edit', async () => {
-    const taskStatus = await models.taskStatus
-      .query()
-      .findOne({ name: testData.statuses.existing.name });
-
-    const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('statuses#edit', { id: taskStatus.id }),
-      cookies: cookie,
-    });
-
-    expect(response.statusCode).toBe(200);
-  });
-
-  it('create', async () => {
-    const params = testData.statuses.new;
+  it('create status', async () => {
+    const newStatus = testData.statuses.new;
 
     const response = await app.inject({
       method: 'POST',
-      url: app.reverse('statuses#create'),
+      cookies,
+      url: app.reverse('statuses'),
       payload: {
-        data: params,
+        data: newStatus,
       },
-      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
-    const taskStatus = await models.taskStatus
+
+    const createdStatus = await models.status
       .query()
-      .findOne({ name: params.name });
-    expect(taskStatus).toMatchObject(params);
+      .findOne({ name: newStatus.name });
+
+    expect(createdStatus).toMatchObject(newStatus);
   });
 
-  it('patch', async () => {
-    const taskStatus = await models.taskStatus
-      .query()
-      .findOne({ name: testData.statuses.existing.name });
-
-    const params = testData.statuses.new;
+  it('edit status', async () => {
+    const newStatus = testData.statuses.new;
 
     const response = await app.inject({
       method: 'PATCH',
-      url: app.reverse('statuses#update', { id: taskStatus.id }),
+      cookies,
+      url: app.reverse('patchStatus', { id: status.id }),
       payload: {
-        data: params,
+        data: newStatus,
       },
-      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
-    const updatedStatus = await models.taskStatus
-      .query()
-      .findById(taskStatus.id);
-    expect(updatedStatus).toMatchObject(params);
+
+    const updatedStatus = await models.status.query().findById(status.id);
+
+    expect(updatedStatus).toMatchObject(newStatus);
   });
 
-  it('delete', async () => {
-    const taskStatus = await models.taskStatus
-      .query()
-      .findOne({ name: testData.statuses.existing.name });
-
+  it('delete status', async () => {
     const response = await app.inject({
       method: 'DELETE',
-      url: app.reverse('statuses#destroy', { id: taskStatus.id }),
-      cookies: cookie,
+      cookies,
+      url: app.reverse('deleteStatus', { id: status.id }),
     });
 
     expect(response.statusCode).toBe(302);
-    const deletedStatus = await models.taskStatus
-      .query()
-      .findById(taskStatus.id);
+
+    const deletedStatus = await models.status.query().findById(status.id);
+
     expect(deletedStatus).toBeUndefined();
   });
 
+  it('delete status linked with task', async () => {
+    await models.task.query().insert({
+      ...testData.tasks.existing,
+      statusId: status.id,
+    });
+
+    const response = await app.inject({
+      method: 'DELETE',
+      cookies,
+      url: app.reverse('deleteStatus', { id: status.id.toString() }),
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const undeletedStatus = await models.status
+      .query()
+      .findById(status.id.toString());
+
+    expect(undeletedStatus).not.toBeUndefined();
+  });
+
   afterEach(async () => {
-    await knex('statuses').truncate();
+    await knex.migrate.rollback();
   });
 
   afterAll(async () => {
-    await app.close();
+    app.close();
   });
 });

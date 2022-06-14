@@ -19,7 +19,7 @@ describe('requests', () => {
   it('GET 200', async () => {
     const res = await app.inject({
       method: 'GET',
-      url: app.reverse('root#index'),
+      url: app.reverse('root'),
     });
     expect(res.statusCode).toBe(200);
   });
@@ -32,7 +32,7 @@ describe('requests', () => {
     expect(res.statusCode).toBe(404);
   });
 
-  afterAll(async () => {
-    await app.close();
+  afterAll(() => {
+    app.close();
   });
 });

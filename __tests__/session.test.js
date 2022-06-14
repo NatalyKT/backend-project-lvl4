@@ -22,28 +22,31 @@ describe('test session', () => {
   it('test sign in / sign out', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('session#index'),
+      url: app.reverse('newSession'),
     });
 
     expect(response.statusCode).toBe(200);
 
     const responseSignIn = await app.inject({
       method: 'POST',
-      url: app.reverse('session#create'),
+      url: app.reverse('session'),
       payload: {
         data: testData.users.existing,
       },
     });
 
     expect(responseSignIn.statusCode).toBe(302);
-
+    // после успешной аутентификации получаем куки из ответа,
+    // они понадобятся для выполнения запросов на маршруты требующие
+    // предварительную аутентификацию
     const [sessionCookie] = responseSignIn.cookies;
     const { name, value } = sessionCookie;
     const cookie = { [name]: value };
 
     const responseSignOut = await app.inject({
       method: 'DELETE',
-      url: app.reverse('session#destroy'),
+      url: app.reverse('session'),
+      // используем полученные ранее куки
       cookies: cookie,
     });
 
@@ -51,6 +54,7 @@ describe('test session', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await knex.migrate.rollback();
+    app.close();
   });
 });
