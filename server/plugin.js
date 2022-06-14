@@ -4,9 +4,8 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fastifyStatic from 'fastify-static';
 import fastifyErrorPage from 'fastify-error-page';
-
-import pointOfView from 'point-of-view';
 import Rollbar from 'rollbar';
+import pointOfView from 'point-of-view';
 import fastifyFormbody from 'fastify-formbody';
 import fastifySecureSession from 'fastify-secure-session';
 import fastifyPassport from 'fastify-passport';

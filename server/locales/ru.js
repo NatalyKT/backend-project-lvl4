@@ -2,15 +2,15 @@
 
 export default {
   translation: {
-    appName: 'Менеджер задач',
+    appName: 'Welcome on board!',
     flash: {
       session: {
         create: {
-          success: 'Вы залогинены',
-          error: 'Неправильный емейл или пароль',
+          success: 'Вы успешно зашли в систему',
+          error: 'Неверный емейл или пароль',
         },
         delete: {
-          success: 'Вы разлогинены',
+          success: 'Вы вышли из системы',
         },
       },
       users: {
@@ -72,7 +72,7 @@ export default {
           error: 'Не удалось удалить метку',
         },
       },
-      authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
+      authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь',
     },
     layouts: {
       application: {
@@ -182,9 +182,9 @@ export default {
       },
       welcome: {
         index: {
-          hello: 'Менеджер задач',
-          description: 'Учебный проект по профессии Node.js разработчик',
-          more: 'Узнать Больше',
+          hello: 'Nask Manager',
+          description: 'Training project 4 for the profession "Node.js developer"',
+          more: 'Интересно, пошли дальше ->',
         },
       },
     },

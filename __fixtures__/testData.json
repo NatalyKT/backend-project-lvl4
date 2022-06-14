@@ -37,7 +37,7 @@
     },
     "existing": {
       "name": "Test",
-      "description": "Run test and check functionality",
+      "description": "Run tests",
       "status_id": 1,
       "creator_id": 2,
       "executor_id": 2
