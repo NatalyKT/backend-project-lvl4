@@ -10,15 +10,16 @@ describe('test tasks CRUD', () => {
   let knex;
   let models;
   let task;
+  let testData;
   let cookies;
-  const testData = getTestData();
 
   beforeAll(async () => {
     // @ts-ignore
     app = fastify({ logger: { prettyPrint: true } });
     await init(app);
-    knex = app.objection.knex;
     models = app.objection.models;
+    knex = app.objection.knex;
+    testData = getTestData();
   });
 
   beforeEach(async () => {
@@ -33,8 +34,8 @@ describe('test tasks CRUD', () => {
   it('index', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('tasks#index'),
       cookies,
+      url: app.reverse('tasks'),
     });
 
     expect(response.statusCode).toBe(200);
@@ -43,8 +44,8 @@ describe('test tasks CRUD', () => {
   it('new', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('tasks#new'),
       cookies,
+      url: app.reverse('newTask'),
     });
 
     expect(response.statusCode).toBe(200);
@@ -154,10 +155,10 @@ describe('test tasks CRUD', () => {
   });
 
   afterEach(async () => {
-    await knex('tasks').truncate();
+    await knex.migrate.rollback();
   });
 
-  afterAll(async () => {
-    await app.close();
+  afterAll(() => {
+    app.close();
   });
 });

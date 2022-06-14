@@ -6,7 +6,6 @@ import {
 
 import fastify from 'fastify';
 import init from '../server/plugin.js';
-// @ts-ignore
 
 describe('requests', () => {
   let app;
@@ -33,7 +32,7 @@ describe('requests', () => {
     expect(res.statusCode).toBe(404);
   });
 
-  afterAll(async () => {
-    await app.close();
+  afterAll(() => {
+    app.close();
   });
 });

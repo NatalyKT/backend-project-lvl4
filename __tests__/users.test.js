@@ -12,8 +12,8 @@ describe('test users CRUD', () => {
   let knex;
   let models;
   let user;
+  let testData;
   let cookies;
-  const testData = getTestData();
 
   beforeAll(async () => {
     // @ts-ignore
@@ -21,6 +21,7 @@ describe('test users CRUD', () => {
     await init(app);
     knex = app.objection.knex;
     models = app.objection.models;
+    testData = getTestData();
   });
 
   beforeEach(async () => {
@@ -190,7 +191,7 @@ describe('test users CRUD', () => {
     await knex.migrate.rollback();
   });
 
-  afterAll(async () => {
-    await app.close();
+  afterAll(() => {
+    app.close();
   });
 });

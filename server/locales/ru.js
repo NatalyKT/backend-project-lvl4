@@ -2,7 +2,7 @@
 
 export default {
   translation: {
-    appName: 'Менеджер задач',
+    appName: 'Task Manager',
     flash: {
       session: {
         create: {

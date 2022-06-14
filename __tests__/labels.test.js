@@ -10,8 +10,8 @@ describe('test labels CRUD', () => {
   let knex;
   let label;
   let models;
+  let testData;
   let cookies;
-  const testData = getTestData();
 
   beforeAll(async () => {
     // @ts-ignore
@@ -19,6 +19,7 @@ describe('test labels CRUD', () => {
     await init(app);
     models = app.objection.models;
     knex = app.objection.knex;
+    testData = getTestData();
   });
 
   beforeEach(async () => {
@@ -33,8 +34,8 @@ describe('test labels CRUD', () => {
   it('index', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('labels#index'),
       cookies,
+      url: app.reverse('labels'),
     });
 
     expect(response.statusCode).toBe(200);
@@ -43,33 +44,35 @@ describe('test labels CRUD', () => {
   it('new', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('labels#new'),
       cookies,
+      url: app.reverse('newLabel'),
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('create', async () => {
+  it('create label', async () => {
     const newLabel = testData.labels.new;
 
     const response = await app.inject({
       method: 'POST',
-      url: app.reverse('labels#create'),
+      cookies,
+      url: app.reverse('labels'),
       payload: {
         data: newLabel,
       },
-      cookies,
     });
 
     expect(response.statusCode).toBe(302);
+
     const createdLabel = await models.label
       .query()
       .findOne({ name: newLabel.name });
+
     expect(createdLabel).toMatchObject(newLabel);
   });
 
-  it('edit', async () => {
+  it('edit label', async () => {
     const newLabel = testData.labels.new;
 
     const response = await app.inject({
@@ -88,40 +91,17 @@ describe('test labels CRUD', () => {
     expect(updateLabel).toMatchObject(newLabel);
   });
 
-  it('patch', async () => {
-    const newLabel = await models.label
-      .query()
-      .findOne({ name: testData.labels.existing.name });
-
-    const params = testData.labels.new;
-
-    const response = await app.inject({
-      method: 'PATCH',
-      url: app.reverse('labels#update', { id: newLabel.id }),
-      payload: {
-        data: params,
-      },
-      cookies,
-    });
-
-    expect(response.statusCode).toBe(302);
-    const updatedLabel = await models.label.query().findById(newLabel.id);
-    expect(updatedLabel).toMatchObject(params);
-  });
-
-  it('delete', async () => {
-    const newLabel = await models.label
-      .query()
-      .findOne({ name: testData.labels.existing.name });
-
+  it('delete label', async () => {
     const response = await app.inject({
       method: 'DELETE',
-      url: app.reverse('labels#destroy', { id: newLabel.id }),
       cookies,
+      url: app.reverse('deleteLabel', { id: label.id }),
     });
 
     expect(response.statusCode).toBe(302);
-    const deletedLabel = await models.label.query().findById(newLabel.id);
+
+    const deletedLabel = await models.label.query().findById(label.id);
+
     expect(deletedLabel).toBeUndefined();
   });
 
@@ -143,10 +123,10 @@ describe('test labels CRUD', () => {
   });
 
   afterEach(async () => {
-    await knex('labels').truncate();
+    await knex.migrate.rollback();
   });
 
-  afterAll(async () => {
-    await app.close();
+  afterAll(() => {
+    app.close();
   });
 });
