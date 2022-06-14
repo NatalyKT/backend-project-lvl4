@@ -22,5 +22,7 @@ block content
             td= user.email
             td= formatDate(user.createdAt)
             if isAuthenticated()
-            td
-              .d-flex.flex-wrap
+            if isAuthenticated()
+              td
+                .d-flex
+                  a(href=route('users#edit', { id: user.id })).btn.btn-primary.me-1= t('views.users.new.submit')

@@ -28,6 +28,7 @@ import FormStrategy from './lib/passportStrategies/FormStrategy.js';
 const __dirname = fileURLToPath(path.dirname(import.meta.url));
 
 const mode = process.env.NODE_ENV || 'development';
+// const isDevelopment = mode === 'development';
 
 const setUpViews = (app) => {
   const helpers = getHelpers(app);
@@ -87,8 +88,7 @@ const registerPlugins = (app) => {
     },
   });
 
-  fastifyPassport
-    .registerUserDeserializer((user) => app.objection.models.user.query().findById(user.id));
+  fastifyPassport.registerUserDeserializer((user) => app.objection.models.user.query().findById(user.id));
   fastifyPassport.registerUserSerializer((user) => Promise.resolve(user));
   fastifyPassport.use(new FormStrategy('form', app));
   app.register(fastifyPassport.initialize());

@@ -14,12 +14,12 @@ module.exports = class User extends unique(BaseModel) {
   static get jsonSchema() {
     return {
       type: "object",
-      required: ['firstName', 'lastName', 'email', 'password'],
+      required: ["firstName", "lastName", "email", "password"],
       properties: {
         id: { type: "integer" },
-        firstName: { type: 'string', minLength: 1 },
-        lastName: { type: 'string', minLength: 1 },
-        email: { type: "string", minLength: "email" },
+        firstName: { type: "string", minLength: 1 },
+        lastName: { type: "string", minLength: 1 },
+        email: { type: "string", pattern: "^\\S+@\\S+\\.\\S+$" },
         password: { type: "string", minLength: 3 },
       },
     };
