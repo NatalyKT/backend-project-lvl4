@@ -1,8 +1,13 @@
 extends ../layouts/application.pug
 
 block content
-    .container.col-4.justify-content-center
-        .d-flex.flex-column
-            h3.mb-3.font-weight-normal.text-center
-            +formFor()(action=route(`users#update`, { id: user.id }) method='post').mb-3
-                +input(user, 'firstName', t('views.placeholders.firstName'), errors)(type='text')
+	.row.justify-content-start
+		.form-control.shadow-sm.bg-light.bg-gradient.rounded-3.w-50
+			h1.h3.my-3.fw-bold= t('views.users.update.title')
+			+formFor()(action=route('users#update', { id: user.id }) method='post')
+				+input(user, 'email', t('views.placeholders.email'),  errors)(type='text')
+				+input(user, 'password', t('views.placeholders.password'), errors)(type='password')
+				+input(user, 'firstName', t('views.placeholders.firstName'), errors)(type='text')
+				+input(user, 'lastName', t('views.placeholders.lastName'), errors)(type='text')
+				input(name="_method" type="hidden" value='patch')
+				+submitSm(user)(value=t('views.users.update.submit'))

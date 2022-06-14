@@ -1,13 +1,12 @@
 extends ../layouts/application.pug
 
+
 block content
   table.table.caption-top.table-hover
     caption
     .text-dark.fs-4.fw-bold= t('layouts.application.users')
-
       thead
-
-          tr
+        tr
           th= t('views.users.id')
           th= t('views.users.fullName')
           th= t('views.users.email')
@@ -18,11 +17,13 @@ block content
         each user in users
           tr
             td= user.id
-            td=user.fullName
+            td= user.name
             td= user.email
             td= formatDate(user.createdAt)
             if isAuthenticated()
-            if isAuthenticated()
               td
-                .d-flex
-                  a(href=route('users#edit', { id: user.id })).btn.btn-primary.me-1= t('views.users.new.submit')
+                .d-inline-flex
+                  a(href=route('users#edit', { id: user.id })).btn.btn-primary.bg-gradient.me-1= t('views.users.update.submit')
+                  +formFor()(action=route(`users#destroy`, { id: user.id }) method='post')
+                    input(name='_method', type='hidden', value='delete')
+                    input.btn.btn-danger.bg-gradient(type='submit', value= t('views.users.delete.submit'))

@@ -2,15 +2,22 @@
 
 import { fileURLToPath } from 'url';
 import path from 'path';
+// @ts-ignore
 import fastifyStatic from 'fastify-static';
+// @ts-ignore
 import fastifyErrorPage from 'fastify-error-page';
 import Rollbar from 'rollbar';
 import pointOfView from 'point-of-view';
+// @ts-ignore
 import fastifyFormbody from 'fastify-formbody';
+// @ts-ignore
 import fastifySecureSession from 'fastify-secure-session';
+// @ts-ignore
 import fastifyPassport from 'fastify-passport';
+// @ts-ignore
 import fastifySensible from 'fastify-sensible';
 import { plugin as fastifyReverseRoutes } from 'fastify-reverse-routes';
+// @ts-ignore
 import fastifyMethodOverride from 'fastify-method-override';
 import fastifyObjectionjs from 'fastify-objectionjs';
 import qs from 'qs';
@@ -28,7 +35,6 @@ import FormStrategy from './lib/passportStrategies/FormStrategy.js';
 const __dirname = fileURLToPath(path.dirname(import.meta.url));
 
 const mode = process.env.NODE_ENV || 'development';
-// const isDevelopment = mode === 'development';
 
 const setUpViews = (app) => {
   const helpers = getHelpers(app);
@@ -61,7 +67,6 @@ const setupLocalization = async () => {
   await i18next.init({
     lng: 'ru',
     fallbackLng: 'en',
-
     resources: {
       ru,
     },
@@ -88,12 +93,22 @@ const registerPlugins = (app) => {
     },
   });
 
-  fastifyPassport.registerUserDeserializer((user) => app.objection.models.user.query().findById(user.id));
+  // @ts-ignore
+  fastifyPassport.registerUserDeserializer(
+    (user) => app.objection.models.user
+      .query()
+      .findById(user.id),
+  );
+  // @ts-ignore
   fastifyPassport.registerUserSerializer((user) => Promise.resolve(user));
+  // @ts-ignore
   fastifyPassport.use(new FormStrategy('form', app));
+  // @ts-ignore
   app.register(fastifyPassport.initialize());
+  // @ts-ignore
   app.register(fastifyPassport.secureSession());
   app.decorate('fp', fastifyPassport);
+  // @ts-ignore
   app.decorate('authenticate', (...args) => fastifyPassport.authenticate(
     'form',
     {
@@ -110,15 +125,23 @@ const registerPlugins = (app) => {
   });
 };
 
-// const setupRollbar = (app) => {
-//   const rollbar = new Rollbar({
-//     accessToken: process.env.ROLLBAR_TOKEN,
-//     captureUncaught: true,
-//     captureUnhandledRejections: true,
-//   });
+const rollbar = new Rollbar({
+  accessToken: process.env.ROLLBAR_KEY,
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+});
+
+const setupErrorHandler = (app) => {
+  app.setErrorHandler(async (err, req, reply) => {
+    rollbar.error(err, req);
+    reply.send(err);
+  });
+};
 
 // eslint-disable-next-line no-unused-vars
+// @ts-ignore
 export default async (app, options) => {
+  setupErrorHandler(app);
   registerPlugins(app);
 
   await setupLocalization();

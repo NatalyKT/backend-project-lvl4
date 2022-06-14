@@ -1,0 +1,9 @@
+extends ../layouts/application.pug
+
+block content
+	.row.justify-content-start
+		.form-control.shadow-sm.bg-light.bg-gradient.rounded-3.w-50
+			h1.h3.my-3.fw-bold= t('views.statuses.new.title')
+			+formFor()(action=route('statuses#create') method='post')
+				+input(taskStatus, 'name', t('views.placeholders.name'), errors)(type='text')
+				+submitSm(taskStatus)(value=t('views.statuses.new.submit'))

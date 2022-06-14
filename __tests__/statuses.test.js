@@ -24,7 +24,9 @@ describe('test statuses CRUD', () => {
   beforeEach(async () => {
     await knex.migrate.latest();
     await prepareData(app);
-    status = await models.status.query().findOne({ name: testData.statuses.existing.name });
+    status = await models.status
+      .query()
+      .findOne({ name: testData.statuses.existing.name });
     cookies = await signIn(app, testData.users.existing);
   });
 
@@ -32,7 +34,7 @@ describe('test statuses CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('statuses#index'),
-      cookies: cookies,
+      cookies,
     });
 
     expect(response.statusCode).toBe(200);
@@ -42,21 +44,7 @@ describe('test statuses CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('statuses#new'),
-      cookies: cookies,
-    });
-
-    expect(response.statusCode).toBe(200);
-  });
-
-  it('edit', async () => {
-    const taskStatus = await models.taskStatus
-      .query()
-      .findOne({ name: testData.statuses.existing.name });
-
-    const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('statuses#edit', { id: taskStatus.id }),
-      cookies: cookies,
+      cookies,
     });
 
     expect(response.statusCode).toBe(200);
@@ -71,7 +59,7 @@ describe('test statuses CRUD', () => {
       payload: {
         data: params,
       },
-      cookies: cookies,
+      cookies,
     });
 
     expect(response.statusCode).toBe(302);
@@ -81,49 +69,81 @@ describe('test statuses CRUD', () => {
     expect(taskStatus).toMatchObject(params);
   });
 
+  it('edit', async () => {
+    const taskStatus = await models.taskStatus
+      .query()
+      .findOne({ name: testData.statuses.existing.name });
+
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('statuses#edit', { id: taskStatus.id }),
+      cookies,
+    });
+
+    expect(response.statusCode).toBe(200);
+  });
+
   it('patch', async () => {
     const taskStatus = await models.taskStatus
       .query()
       .findOne({ name: testData.statuses.existing.name });
 
-    const params = testData.statuses.new;
+    const newStatus = testData.statuses.new;
 
     const response = await app.inject({
       method: 'PATCH',
       url: app.reverse('statuses#update', { id: taskStatus.id }),
       payload: {
-        data: params,
+        data: newStatus,
       },
-      cookies: cookies,
+      cookies,
     });
 
     expect(response.statusCode).toBe(302);
+
     const updatedStatus = await models.taskStatus
       .query()
       .findById(taskStatus.id);
-    expect(updatedStatus).toMatchObject(params);
+    expect(updatedStatus).toMatchObject(newStatus);
   });
 
   it('delete', async () => {
-    const taskStatus = await models.taskStatus
-      .query()
-      .findOne({ name: testData.statuses.existing.name });
-
     const response = await app.inject({
       method: 'DELETE',
-      url: app.reverse('statuses#destroy', { id: taskStatus.id }),
-      cookies: cookies,
+      cookies,
+      url: app.reverse('deleteStatus', { id: status.id }),
     });
 
     expect(response.statusCode).toBe(302);
-    const deletedStatus = await models.taskStatus
-      .query()
-      .findById(taskStatus.id);
+
+    const deletedStatus = await models.status.query().findById(status.id);
+
     expect(deletedStatus).toBeUndefined();
   });
 
+  it('delete status linked with task', async () => {
+    await models.task.query().insert({
+      ...testData.tasks.existing,
+      statusId: status.id,
+    });
+
+    const response = await app.inject({
+      method: 'DELETE',
+      cookies,
+      url: app.reverse('deleteStatus', { id: status.id.toString() }),
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const undeletedStatus = await models.status
+      .query()
+      .findById(status.id.toString());
+
+    expect(undeletedStatus).not.toBeUndefined();
+  });
+
   afterEach(async () => {
-    await knex('statuses').truncate();
+    await knex.migrate.rollback();
   });
 
   afterAll(async () => {

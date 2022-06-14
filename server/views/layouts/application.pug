@@ -8,24 +8,23 @@ html(lang="en")
     link(href=assetPath('main.css') rel="stylesheet")
     meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
   body.d-flex.flex-column.min-vh-100
-    nav.navbar.navbar-expand-lg.navbar-light.bg-gradient.mb-3
-      .container-fluid
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.bg-gradient.mb-3
+      .container
         a.navbar-brand(href=route('root#index'))= t('appName')
-        button.navbar-toggler(data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent")
+        button.navbar-toggler(data-bs-toggle='collapse' data-bs-target="#navbarToggleExternalContent")
           span.navbar-toggler-icon
         .collapse.navbar-collapse(id="navbarToggleExternalContent")
-          .container-fluid
-            ul.navbar-nav.mr-auto
-              li.nav-item
-                a.nav-link(href=route('users#index'))= t('layouts.application.users')
+          ul.navbar-nav.justify-content-end.w-100
+            li.nav-item.me-auto
+              a.nav-link(href=route('users#index'))= t('layouts.application.users')
           ul.navbar-nav
             if isAuthenticated()
-                          li.nav-item
-                a.nav-link(href='#')= t('layouts.application.statuses')
               li.nav-item
-                a.nav-link(href='#')= t('layouts.application.labels')
+                a.nav-link(href=route('statuses#index'))= t('layouts.application.statuses')
               li.nav-item
-                a.nav-link(href='#')= t('layouts.application.tasks')
+                a.nav-link(href=route('labels#index'))= t('layouts.application.labels')
+              li.nav-item
+                a.nav-link(href=route('tasks#index'))= t('layouts.application.tasks')
               li.nav-item
                 +buttonTo(route('session#destroy'), 'delete')(class="btn nav-link" value=t('layouts.application.signOut'))
             else
@@ -44,26 +43,20 @@ html(lang="en")
       block content
 
 // Footer
-footer.text-center.text-lg-start.bg-light.text-muted
-  // Section: Social media
-  section.d-flex.justify-content-center.justify-content-lg-between.p-4.border-bottom
-    // Left
-    .me-5.d-none.d-lg-block
-      span Get connected with us on social networks:
-    // Right
-    div
-      a.me-4.text-reset(href='https://t.me/nataly_kt')
-        i.fab.fa-telegram
-      a.me-4.text-reset(href='https://www.linkedin.com/in/natalia-tyshchenko-b9287187/')
-        i.fab.fa-linkedin
-      a.me-4.text-reset(href='https://github.com/NatalyKT')
-        i.fab.fa-github
-    // Right
-  // Section: Social media
-  // Copyright
-  .text-center.p-4(style='background-color: rgba(0, 0, 0, 0.05);')
-    | &copy; 2022 Copyright: 
-    a.text-reset.fw-bold(href='https://ru.hexlet.io/') Hexlet Ltd.
-  // Copyright
-// Footer
-
+.container
+      footer.d-flex.flex-wrap.justify-content-between.align-items-center.py-3.my-3(style='background-color: rgba(0, 0, 0, 0.05);').border-top
+        // Section: Social media
+        .col-md-4.d-flex.align-items-center
+          a.mb-3.me-2.mb-md-0.text-decoration-none.lh-1(href='https://ru.hexlet.io/')
+            i.bi-github.fs-2.me-2(role="img" aria-label="GitHub")
+          span.text-muted &copy; 2022 Hexlet Ltd.
+        ul.nav.col-md-4.justify-content-end.list-unstyled.d-flex
+          li.ms-3
+            a.text-muted(href='https://t.me/nataly_kt')
+              i.bi.bi-telegram(style='font-size: 1.5rem', role='img')
+          li.ms-3
+            a.text-muted(href='https://www.linkedin.com/in/natalia-tyshchenko-b9287187/')
+              i.bi-linkedin(style='font-size: 1.5rem', role='img')
+          li.ms-3
+            a.text-muted(href='https://github.com/NatalyKT')
+              i.bi-github(style='font-size: 1.5rem', role='img')

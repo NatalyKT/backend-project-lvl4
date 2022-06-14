@@ -1,0 +1,9 @@
+extends ../layouts/application.pug
+
+block content
+	.row.justify-content-start
+		.form-control.shadow-sm.bg-light.bg-gradient.rounded-3.w-50
+			h1.h3.my-3.fw-bold= t('views.labels.new.title')
+			+formFor()(action=route('labels#create') method='post')
+				+input(label, 'name', t('views.placeholders.name'), errors)(type='text')
+				+submitSm(label)(value=t('views.labels.new.submit'))

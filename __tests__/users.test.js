@@ -26,7 +26,9 @@ describe('test users CRUD', () => {
   beforeEach(async () => {
     await knex.migrate.latest();
     await prepareData(app);
-    user = await models.user.query().findOne({ email: testData.users.existing.email });
+    user = await models.user
+      .query()
+      .findOne({ email: testData.users.existing.email });
     cookies = await signIn(app, testData.users.existing);
   });
 
@@ -43,13 +45,13 @@ describe('test users CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('newUser'),
-      cookies: cookies,
+      cookies,
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('create', async () => {
+  it('create user', async () => {
     const newUser = testData.users.new;
     const response = await app.inject({
       method: 'POST',
@@ -66,8 +68,10 @@ describe('test users CRUD', () => {
       passwordDigest: encrypt(newUser.password),
     };
 
-    const user = await models.user.query().findOne({ email: newUser.email });
-    expect(user).toMatchObject(expected);
+    const testUser = await models.user
+      .query()
+      .findOne({ email: newUser.email });
+    expect(testUser).toMatchObject(expected);
   });
 
   it('edit user', async () => {
@@ -88,7 +92,9 @@ describe('test users CRUD', () => {
       passwordDigest: encrypt(newUser.password),
     };
 
-    const editedUser = await models.user.query().findOne({ email: newUser.email });
+    const editedUser = await models.user
+      .query()
+      .findOne({ email: newUser.email });
 
     expect(editedUser).toMatchObject(expected);
   });
@@ -116,8 +122,10 @@ describe('test users CRUD', () => {
 
     expect(response.statusCode).toBe(200);
 
-    const falseCreatedUser = await models.user.query().findOne({ email: newUser.email });
-    expect(falseCreatedUser).toBeUndefined();
+    const falsCreatedUser = await models.user
+      .query()
+      .findOne({ email: newUser.email });
+    expect(falsCreatedUser).toBeUndefined();
   });
 
   it('create user with the same email', async () => {
@@ -133,7 +141,9 @@ describe('test users CRUD', () => {
 
     expect(response.statusCode).toBe(200);
 
-    const falseCreatedUser = await models.user.query().findOne({ email: newUser.email });
+    const falseCreatedUser = await models.user
+      .query()
+      .findOne({ email: newUser.email });
     expect(falseCreatedUser).toBeUndefined();
   });
 
@@ -151,7 +161,9 @@ describe('test users CRUD', () => {
 
     expect(statusCode).toBe(200);
 
-    const unupdatedUser = await models.user.query().findOne({ email: newUser.email });
+    const unupdatedUser = await models.user
+      .query()
+      .findOne({ email: newUser.email });
     expect(unupdatedUser).toBeUndefined();
   });
 
