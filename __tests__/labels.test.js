@@ -8,34 +8,28 @@ import { getTestData, prepareData, signIn } from './helpers/index.js';
 describe('test labels CRUD', () => {
   let app;
   let knex;
-  let label;
   let models;
-  let testData;
-  let cookies;
+  let cookie;
+  const testData = getTestData();
 
   beforeAll(async () => {
-    // @ts-ignore
     app = fastify({ logger: { prettyPrint: true } });
     await init(app);
-    models = app.objection.models;
     knex = app.objection.knex;
-    testData = getTestData();
+    models = app.objection.models;
+    await knex.migrate.latest();
   });
 
   beforeEach(async () => {
-    await knex.migrate.latest();
     await prepareData(app);
-    label = await models.label
-      .query()
-      .findOne({ name: testData.labels.existing.name });
-    cookies = await signIn(app, testData.users.existing);
+    cookie = await signIn(app, testData.users.existing);
   });
 
   it('index', async () => {
     const response = await app.inject({
       method: 'GET',
-      cookies,
-      url: app.reverse('labels'),
+      url: app.reverse('labels#index'),
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(200);
@@ -44,89 +38,92 @@ describe('test labels CRUD', () => {
   it('new', async () => {
     const response = await app.inject({
       method: 'GET',
-      cookies,
-      url: app.reverse('newLabel'),
+      url: app.reverse('labels#new'),
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('create label', async () => {
-    const newLabel = testData.labels.new;
+  it('edit', async () => {
+    const label = await models.label
+      .query()
+      .findOne({ name: testData.labels.existing.name });
+
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('labels#edit', { id: label.id }),
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('create', async () => {
+    const params = testData.labels.new;
 
     const response = await app.inject({
       method: 'POST',
-      cookies,
-      url: app.reverse('labels'),
+      url: app.reverse('labels#create'),
       payload: {
-        data: newLabel,
+        data: params,
       },
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
-
-    const createdLabel = await models.label
+    const label = await models.label
       .query()
-      .findOne({ name: newLabel.name });
-
-    expect(createdLabel).toMatchObject(newLabel);
+      .findOne({ name: params.name });
+    expect(label).toMatchObject(params);
   });
 
-  it('edit label', async () => {
-    const newLabel = testData.labels.new;
+  it('patch', async () => {
+    const label = await models.label
+      .query()
+      .findOne({ name: testData.labels.existing.name });
+
+    const params = testData.labels.new;
 
     const response = await app.inject({
       method: 'PATCH',
-      cookies,
-      url: `/labels/${label.id}`,
+      url: app.reverse('labels#update', { id: label.id }),
       payload: {
-        data: newLabel,
+        data: params,
       },
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
-
-    const updateLabel = await models.label.query().findById(label.id);
-
-    expect(updateLabel).toMatchObject(newLabel);
+    const updatedLabel = await models.label
+      .query()
+      .findById(label.id);
+    expect(updatedLabel).toMatchObject(params);
   });
 
-  it('delete label', async () => {
+  it('delete', async () => {
+    const label = await models.label
+      .query()
+      .findOne({ name: testData.labels.existing.name });
+
     const response = await app.inject({
       method: 'DELETE',
-      cookies,
-      url: app.reverse('deleteLabel', { id: label.id }),
+      url: app.reverse('labels#destroy', { id: label.id }),
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
-
-    const deletedLabel = await models.label.query().findById(label.id);
-
+    const deletedLabel = await models.label
+      .query()
+      .findById(label.id);
     expect(deletedLabel).toBeUndefined();
   });
 
-  it('delete label linked with task', async () => {
-    const task = await models.task.query().insert(testData.tasks.existing);
-    await task.$relatedQuery('labels').relate(label);
-
-    const response = await app.inject({
-      method: 'DELETE',
-      cookies,
-      url: app.reverse('deleteLabel', { id: label.id.toString() }),
-    });
-
-    expect(response.statusCode).toBe(302);
-
-    const undeletedLabel = await models.label.query().findById(label.id);
-
-    expect(undeletedLabel).not.toBeUndefined();
-  });
-
   afterEach(async () => {
-    await knex.migrate.rollback();
+    await knex('labels').truncate();
   });
 
-  afterAll(() => {
-    app.close();
+  afterAll(async () => {
+    await app.close();
   });
 });

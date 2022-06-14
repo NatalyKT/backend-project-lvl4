@@ -11,7 +11,6 @@ describe('requests', () => {
   let app;
 
   beforeAll(async () => {
-    // @ts-ignore
     app = fastify({ logger: { prettyPrint: true } });
     await init(app);
   });
@@ -19,7 +18,7 @@ describe('requests', () => {
   it('GET 200', async () => {
     const res = await app.inject({
       method: 'GET',
-      url: app.reverse('root'),
+      url: app.reverse('root#index'),
     });
     expect(res.statusCode).toBe(200);
   });
@@ -32,7 +31,7 @@ describe('requests', () => {
     expect(res.statusCode).toBe(404);
   });
 
-  afterAll(() => {
-    app.close();
+  afterAll(async () => {
+    await app.close();
   });
 });
