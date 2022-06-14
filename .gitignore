@@ -1,8 +1,8 @@
 .idea/
 .vscode/
 node_modules/
-build/
 dist/
+build/
 tmp/
 temp/
 database.sqlite

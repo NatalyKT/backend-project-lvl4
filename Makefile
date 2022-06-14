@@ -26,6 +26,3 @@ lint:
 
 test:
 	npm test -s
-
-test-coverage:
-	npx jest --coverage --coverageProvider=v8
