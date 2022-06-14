@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 
 import { fileURLToPath } from 'url';
 import path from 'path';

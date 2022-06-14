@@ -13,6 +13,7 @@ describe('test labels CRUD', () => {
   const testData = getTestData();
 
   beforeAll(async () => {
+    // @ts-ignore
     app = fastify({ logger: { prettyPrint: true } });
     await init(app);
     knex = app.objection.knex;

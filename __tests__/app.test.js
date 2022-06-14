@@ -11,6 +11,7 @@ describe('requests', () => {
   let app;
 
   beforeAll(async () => {
+    // @ts-ignore
     app = fastify({ logger: { prettyPrint: true } });
     await init(app);
   });
