@@ -9,33 +9,27 @@ describe('test tasks CRUD', () => {
   let app;
   let knex;
   let models;
-  let task;
-  let testData;
-  let cookies;
+  let cookie;
+  const testData = getTestData();
 
   beforeAll(async () => {
-    // @ts-ignore
     app = fastify({ logger: { prettyPrint: true } });
     await init(app);
-    models = app.objection.models;
     knex = app.objection.knex;
-    testData = getTestData();
+    models = app.objection.models;
+    await knex.migrate.latest();
   });
 
   beforeEach(async () => {
-    await knex.migrate.latest();
     await prepareData(app);
-    task = await models.task
-      .query()
-      .findOne({ name: testData.tasks.existing.name });
-    cookies = await signIn(app, testData.users.existing);
+    cookie = await signIn(app, testData.users.existing);
   });
 
   it('index', async () => {
     const response = await app.inject({
       method: 'GET',
-      cookies,
-      url: app.reverse('tasks'),
+      url: app.reverse('tasks#index'),
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(200);
@@ -44,121 +38,103 @@ describe('test tasks CRUD', () => {
   it('new', async () => {
     const response = await app.inject({
       method: 'GET',
-      cookies,
-      url: app.reverse('newTask'),
+      url: app.reverse('tasks#new'),
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('task info', async () => {
+  it('view', async () => {
+    const task = await models.task
+      .query()
+      .findOne({ name: testData.tasks.existing.name });
+
     const response = await app.inject({
       method: 'GET',
-      cookies,
-      url: app.reverse('newTask', { id: `${task.id}` }),
+      url: app.reverse('tasks#view', { id: task.id }),
+      cookies: cookie,
     });
-
     expect(response.statusCode).toBe(200);
   });
 
-  it('create task', async () => {
+  it('edit', async () => {
+    const task = await models.task
+      .query()
+      .findOne({ name: testData.tasks.existing.name });
+
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('tasks#edit', { id: task.id }),
+      cookies: cookie,
+    });
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('create', async () => {
+    const params = testData.tasks.new;
+
     const response = await app.inject({
       method: 'POST',
-      cookies,
-      url: app.reverse('tasks'),
+      url: app.reverse('tasks#create'),
       payload: {
-        data: testData.tasks.new,
+        data: params,
       },
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
-
-    const createdTask = await models.task
+    const task = await models.task
       .query()
-      .findOne({ name: testData.tasks.new.name });
-
-    expect(createdTask).not.toBeUndefined();
+      .findOne({ name: params.name });
+    expect(task).toMatchObject(params);
   });
 
-  it('create task without executor', async () => {
-    const newTask = { ...testData.tasks.new, executorId: '' };
-    const response = await app.inject({
-      method: 'POST',
-      cookies,
-      url: app.reverse('tasks'),
-      payload: {
-        data: newTask,
-      },
-    });
-
-    expect(response.statusCode).toBe(302);
-
-    const createdTask = await models.task
+  it('update', async () => {
+    const task = await models.task
       .query()
-      .findOne({ name: newTask.name });
-
-    expect(createdTask).not.toBeUndefined();
-  });
-
-  it('edit task', async () => {
-    const newTask = { ...testData.tasks.new };
-
-    const { id } = await models.task.query().findOne({ name: task.name });
+      .findOne({ name: testData.tasks.existing.name });
+    const params = testData.tasks.new;
 
     const response = await app.inject({
       method: 'PATCH',
-      cookies,
-      url: app.reverse('updateTask', { id }),
+      url: app.reverse('tasks#update', { id: task.id }),
       payload: {
-        data: newTask,
+        data: params,
       },
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
-
     const updatedTask = await models.task
       .query()
-      .findOne({ name: newTask.name });
-
-    expect(updatedTask).not.toBeUndefined();
+      .findById(task.id);
+    expect(updatedTask).toMatchObject(params);
   });
 
-  it('delete task', async () => {
+  it('delete', async () => {
+    const task = await models.task
+      .query()
+      .findOne({ name: testData.tasks.existing.name });
+
     const response = await app.inject({
       method: 'DELETE',
-      cookies,
-      url: app.reverse('deleteTask', { id: `${task.id}` }),
+      url: app.reverse('tasks#destroy', { id: task.id }),
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
-
-    const deletedTask = await models.task.query().findById(task.id);
-
+    const deletedTask = await models.task
+      .query()
+      .findById(task.id);
     expect(deletedTask).toBeUndefined();
   });
 
-  it("can't delete other user task", async () => {
-    const otherTask = await models.task.query().findById(1);
-    const response = await app.inject({
-      method: 'DELETE',
-      cookies,
-      url: app.reverse('deleteTask', { id: otherTask.id }),
-    });
-
-    expect(response.statusCode).toBe(302);
-
-    const undeletedTask = await models.task
-      .query()
-      .findOne({ creatorId: otherTask.creatorId });
-
-    expect(undeletedTask).toMatchObject(otherTask);
-  });
-
   afterEach(async () => {
-    await knex.migrate.rollback();
+    await knex('tasks').truncate();
   });
 
-  afterAll(() => {
-    app.close();
+  afterAll(async () => {
+    await app.close();
   });
 });

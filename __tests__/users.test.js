@@ -11,32 +11,24 @@ describe('test users CRUD', () => {
   let app;
   let knex;
   let models;
-  let user;
-  let testData;
-  let cookies;
+  const testData = getTestData();
 
   beforeAll(async () => {
-    // @ts-ignore
     app = fastify({ logger: { prettyPrint: true } });
     await init(app);
     knex = app.objection.knex;
     models = app.objection.models;
-    testData = getTestData();
+    await knex.migrate.latest();
   });
 
   beforeEach(async () => {
-    await knex.migrate.latest();
     await prepareData(app);
-    user = await models.user
-      .query()
-      .findOne({ email: testData.users.existing.email });
-    cookies = await signIn(app, testData.users.existing);
   });
 
   it('index', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('users'),
+      url: app.reverse('users#index'),
     });
 
     expect(response.statusCode).toBe(200);
@@ -45,153 +37,95 @@ describe('test users CRUD', () => {
   it('new', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('newUser'),
-      cookies,
+      url: app.reverse('users#new'),
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('create user', async () => {
-    const newUser = testData.users.new;
+  it('create', async () => {
+    const params = testData.users.new;
     const response = await app.inject({
       method: 'POST',
-      url: app.reverse('users'),
+      url: app.reverse('users#create'),
       payload: {
-        data: newUser,
+        data: params,
       },
     });
 
     expect(response.statusCode).toBe(302);
-
     const expected = {
-      ..._.omit(newUser, 'password'),
-      passwordDigest: encrypt(newUser.password),
+      ..._.omit(params, 'password'),
+      passwordDigest: encrypt(params.password),
     };
-
-    const testUser = await models.user
+    const user = await models.user
       .query()
-      .findOne({ email: newUser.email });
-    expect(testUser).toMatchObject(expected);
+      .findOne({ email: params.email });
+    expect(user).toMatchObject(expected);
   });
 
-  it('edit user', async () => {
-    const newUser = testData.users.new;
+  it('edit', async () => {
+    const cookie = await signIn(app, testData.users.existing);
+    const user = await models.user
+      .query()
+      .findOne({ email: testData.users.existing.email });
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('users#edit', { id: user.id }),
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('update', async () => {
+    const cookie = await signIn(app, testData.users.existing);
+    const user = await models.user
+      .query()
+      .findOne({ email: testData.users.existing.email });
+    const params = testData.users.new;
     const response = await app.inject({
       method: 'PATCH',
-      url: `/users/${user.id}`,
+      url: app.reverse('users#update', { id: user.id }),
+      cookies: cookie,
       payload: {
-        data: newUser,
+        data: params,
       },
-      cookies,
     });
 
     expect(response.statusCode).toBe(302);
-
     const expected = {
-      ..._.omit(newUser, 'password'),
-      passwordDigest: encrypt(newUser.password),
+      ..._.omit(params, 'password'),
+      passwordDigest: encrypt(params.password),
     };
-
-    const editedUser = await models.user
+    const updatedUser = await models.user
       .query()
-      .findOne({ email: newUser.email });
-
-    expect(editedUser).toMatchObject(expected);
+      .findById(user.id);
+    expect(updatedUser).toMatchObject(expected);
   });
+  it('delete', async () => {
+    const cookie = await signIn(app, testData.users.deleted);
 
-  it('delete user', async () => {
+    const user = await models.user
+      .query()
+      .findOne({ email: testData.users.deleted.email });
     const response = await app.inject({
       method: 'DELETE',
-      cookies,
-      url: app.reverse('deleteUser', { id: user.id }),
+      url: app.reverse('users#destroy', { id: user.id }),
+      cookies: cookie,
     });
 
     expect(response.statusCode).toBe(302);
-  });
+    const deletedUser = await models.user.query().findById(user.id);
 
-  it('create user with empty field', async () => {
-    const newUser = testData.users.new;
-
-    const response = await app.inject({
-      method: 'POST',
-      url: app.reverse('users'),
-      payload: {
-        data: { ...newUser, firstName: '', lastName: '' },
-      },
-    });
-
-    expect(response.statusCode).toBe(200);
-
-    const falsCreatedUser = await models.user
-      .query()
-      .findOne({ email: newUser.email });
-    expect(falsCreatedUser).toBeUndefined();
-  });
-
-  it('create user with the same email', async () => {
-    const newUser = testData.users.new;
-
-    const response = await app.inject({
-      method: 'POST',
-      url: app.reverse('users'),
-      payload: {
-        data: { ...newUser, email: user.email },
-      },
-    });
-
-    expect(response.statusCode).toBe(200);
-
-    const falseCreatedUser = await models.user
-      .query()
-      .findOne({ email: newUser.email });
-    expect(falseCreatedUser).toBeUndefined();
-  });
-
-  it('update user with empty password', async () => {
-    const newUser = testData.users.new;
-
-    const { statusCode } = await app.inject({
-      method: 'PATCH',
-      url: `/users/${user.id}`,
-      payload: {
-        data: { ...newUser, password: '' },
-      },
-      cookies,
-    });
-
-    expect(statusCode).toBe(200);
-
-    const unupdatedUser = await models.user
-      .query()
-      .findOne({ email: newUser.email });
-    expect(unupdatedUser).toBeUndefined();
-  });
-
-  it('delete user with tasks', async () => {
-    await models.task.query().insert({
-      ...testData.tasks.new,
-      creatorId: user.id,
-    });
-
-    const response = await app.inject({
-      method: 'DELETE',
-      url: app.reverse('deleteUser', { id: user.id }),
-      cookies,
-    });
-
-    expect(response.statusCode).toBe(302);
-
-    const undeletedUser = await models.user.query().findById(user.id);
-
-    expect(undeletedUser).not.toBeUndefined();
+    expect(deletedUser).toBeUndefined();
   });
 
   afterEach(async () => {
-    await knex.migrate.rollback();
+    await knex('users').truncate();
   });
 
-  afterAll(() => {
-    app.close();
+  afterAll(async () => {
+    await app.close();
   });
 });
