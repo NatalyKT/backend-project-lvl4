@@ -10,6 +10,7 @@ describe('test session', () => {
   let testData;
 
   beforeAll(async () => {
+    // @ts-ignore
     app = fastify({ logger: { prettyPrint: true } });
     await init(app);
     knex = app.objection.knex;
@@ -53,7 +54,7 @@ describe('test session', () => {
   });
 
   afterAll(async () => {
-    // await knex.migrate.rollback();
+    await knex.migrate.rollback();
     await app.close();
   });
 });

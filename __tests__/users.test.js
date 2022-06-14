@@ -5,29 +5,30 @@ import fastify from 'fastify';
 
 import init from '../server/plugin.js';
 import encrypt from '../server/lib/secure.cjs';
-import { getTestData, prepareData } from './helpers/index.js';
+import { getTestData, prepareData, signIn } from './helpers/index.js';
 
 describe('test users CRUD', () => {
   let app;
   let knex;
   let models;
+  let user;
+  let cookies;
   const testData = getTestData();
 
   beforeAll(async () => {
+    // @ts-ignore
     app = fastify({ logger: { prettyPrint: true } });
     await init(app);
     knex = app.objection.knex;
     models = app.objection.models;
-
-    // TODO: пока один раз перед тестами
-    // тесты не должны зависеть друг от друга
-    // перед каждым тестом выполняем миграции
-    // и заполняем БД тестовыми данными
-    await knex.migrate.latest();
-    await prepareData(app);
   });
 
-  beforeEach(async () => {});
+  beforeEach(async () => {
+    await knex.migrate.latest();
+    await prepareData(app);
+    user = await models.user.query().findOne({ email: testData.users.existing.email });
+    cookies = await signIn(app, testData.users.existing);
+  });
 
   it('index', async () => {
     const response = await app.inject({
@@ -42,28 +43,135 @@ describe('test users CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('newUser'),
+      cookies: cookies,
     });
 
     expect(response.statusCode).toBe(200);
   });
 
   it('create', async () => {
-    const params = testData.users.new;
+    const newUser = testData.users.new;
     const response = await app.inject({
       method: 'POST',
       url: app.reverse('users'),
       payload: {
-        data: params,
+        data: newUser,
       },
     });
 
     expect(response.statusCode).toBe(302);
+
     const expected = {
-      ..._.omit(params, 'password'),
-      passwordDigest: encrypt(params.password),
+      ..._.omit(newUser, 'password'),
+      passwordDigest: encrypt(newUser.password),
     };
-    const user = await models.user.query().findOne({ email: params.email });
+
+    const user = await models.user.query().findOne({ email: newUser.email });
     expect(user).toMatchObject(expected);
+  });
+
+  it('edit user', async () => {
+    const newUser = testData.users.new;
+    const response = await app.inject({
+      method: 'PATCH',
+      url: `/users/${user.id}`,
+      payload: {
+        data: newUser,
+      },
+      cookies,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const expected = {
+      ..._.omit(newUser, 'password'),
+      passwordDigest: encrypt(newUser.password),
+    };
+
+    const editedUser = await models.user.query().findOne({ email: newUser.email });
+
+    expect(editedUser).toMatchObject(expected);
+  });
+
+  it('delete user', async () => {
+    const response = await app.inject({
+      method: 'DELETE',
+      cookies,
+      url: app.reverse('deleteUser', { id: user.id }),
+    });
+
+    expect(response.statusCode).toBe(302);
+  });
+
+  it('create user with empty field', async () => {
+    const newUser = testData.users.new;
+
+    const response = await app.inject({
+      method: 'POST',
+      url: app.reverse('users'),
+      payload: {
+        data: { ...newUser, firstName: '', lastName: '' },
+      },
+    });
+
+    expect(response.statusCode).toBe(200);
+
+    const falseCreatedUser = await models.user.query().findOne({ email: newUser.email });
+    expect(falseCreatedUser).toBeUndefined();
+  });
+
+  it('create user with the same email', async () => {
+    const newUser = testData.users.new;
+
+    const response = await app.inject({
+      method: 'POST',
+      url: app.reverse('users'),
+      payload: {
+        data: { ...newUser, email: user.email },
+      },
+    });
+
+    expect(response.statusCode).toBe(200);
+
+    const falseCreatedUser = await models.user.query().findOne({ email: newUser.email });
+    expect(falseCreatedUser).toBeUndefined();
+  });
+
+  it('update user with empty password', async () => {
+    const newUser = testData.users.new;
+
+    const { statusCode } = await app.inject({
+      method: 'PATCH',
+      url: `/users/${user.id}`,
+      payload: {
+        data: { ...newUser, password: '' },
+      },
+      cookies,
+    });
+
+    expect(statusCode).toBe(200);
+
+    const unupdatedUser = await models.user.query().findOne({ email: newUser.email });
+    expect(unupdatedUser).toBeUndefined();
+  });
+
+  it('delete user with tasks', async () => {
+    await models.task.query().insert({
+      ...testData.tasks.new,
+      creatorId: user.id,
+    });
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: app.reverse('deleteUser', { id: user.id }),
+      cookies,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const undeletedUser = await models.user.query().findById(user.id);
+
+    expect(undeletedUser).not.toBeUndefined();
   });
 
   afterEach(async () => {

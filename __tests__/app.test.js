@@ -6,11 +6,13 @@ import {
 
 import fastify from 'fastify';
 import init from '../server/plugin.js';
+// @ts-ignore
 
 describe('requests', () => {
   let app;
 
   beforeAll(async () => {
+    // @ts-ignore
     app = fastify({ logger: { prettyPrint: true } });
     await init(app);
   });
