@@ -1,18 +1,14 @@
 ---
+
 root: true
 
 parserOptions:
   ecmaVersion: latest
 
-plugins:
-  # https://github.com/jest-community/eslint-plugin-jest
-  - jest
-
 extends:
-  - "airbnb-base"
-  - "plugin:jest/recommended"
+  - 'airbnb-base'
+  - 'plugin:jest/recommended'
 
-# https://eslint.org/docs/user-guide/configuring#specifying-environments
 env:
   browser: true
   node: true
@@ -28,6 +24,6 @@ rules:
     - error
     - props: true
       ignorePropertyModificationsFor:
-        - req
-        - reply
+      - req
+      - reply
   no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]

@@ -2,20 +2,20 @@
 
 export default {
   translation: {
-    appName: 'Task Manager',
+    appName: 'Менеджер задач',
     flash: {
       session: {
         create: {
-          success: 'Авторизация прошла успешно',
+          success: 'Вы залогинены',
           error: 'Неправильный емейл или пароль',
         },
         delete: {
-          success: 'Успешный выход из приложения',
+          success: 'Вы разлогинены',
         },
       },
       users: {
         create: {
-          error: 'Не удалось зарегистрировать пользователя',
+          error: 'Не удалось зарегистрировать',
           success: 'Пользователь успешно зарегистрирован',
         },
         update: {
@@ -72,7 +72,7 @@ export default {
           error: 'Не удалось удалить метку',
         },
       },
-      authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь в системе',
+      authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
     layouts: {
       application: {
@@ -182,8 +182,8 @@ export default {
       },
       welcome: {
         index: {
-          hello: 'Task Manager',
-          description: 'Training project 4 for the profession "Node.js developer"',
+          hello: 'Менеджер задач',
+          description: 'Учебный проект по профессии Node.js разработчик',
           more: 'Узнать Больше',
         },
       },
