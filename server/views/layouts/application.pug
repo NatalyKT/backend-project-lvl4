@@ -42,21 +42,16 @@ html(lang="en")
         block header
       block content
 
-// Footer
-.container
-      footer.d-flex.flex-wrap.justify-content-between.align-items-center.py-3.my-3(style='background-color: rgba(0, 0, 0, 0.05);').border-top
-        // Section: Social media
+    .container
+      footer.d-flex.flex-wrap.justify-content-between.align-items-center.py-3.my-3.border-top
         .col-md-4.d-flex.align-items-center
-          a.mb-3.me-2.mb-md-0.text-decoration-none.lh-1(href='https://ru.hexlet.io/')
+          a.mb-3.me-2.mb-md-0.text-decoration-none.lh-1(href='https://github.com/NatalyKT/backend-project-lvl4/')
             i.bi-github.fs-2.me-2(role="img" aria-label="GitHub")
           span.text-muted &copy; 2022 Hexlet Ltd.
         ul.nav.col-md-4.justify-content-end.list-unstyled.d-flex
           li.ms-3
             a.text-muted(href='https://t.me/nataly_kt')
-              i.bi.bi-telegram(style='font-size: 1.5rem', role='img')
+              i.bi-telegram(style='font-size: 1.5rem', role='img', aria-label='telegram')
           li.ms-3
             a.text-muted(href='https://www.linkedin.com/in/natalia-tyshchenko-b9287187/')
-              i.bi-linkedin(style='font-size: 1.5rem', role='img')
-          li.ms-3
-            a.text-muted(href='https://github.com/NatalyKT')
-              i.bi-github(style='font-size: 1.5rem', role='img')
+              i.bi-linkedin(style='font-size: 1.5rem', role='img', aria-label='linkedin')

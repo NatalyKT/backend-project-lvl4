@@ -1,26 +1,26 @@
 // @ts-check
 
-const objectionUnique = require("objection-unique");
-const BaseModel = require("./BaseModel.cjs");
-const encrypt = require("../lib/secure.cjs");
+const objectionUnique = require('objection-unique');
+const BaseModel = require('./BaseModel.cjs');
+const encrypt = require('../lib/secure.cjs');
 
-const unique = objectionUnique({ fields: ["email"] });
+const unique = objectionUnique({ fields: ['email'] });
 
 module.exports = class User extends unique(BaseModel) {
   static get tableName() {
-    return "users";
+    return 'users';
   }
 
   static get jsonSchema() {
     return {
-      type: "object",
-      required: ["firstName", "lastName", "email", "password"],
+      type: 'object',
+      required: ['firstName', 'lastName', 'email', 'password'],
       properties: {
-        id: { type: "integer" },
-        firstName: { type: "string", minLength: 1 },
-        lastName: { type: "string", minLength: 1 },
-        email: { type: "string", pattern: "^\\S+@\\S+\\.\\S+$" },
-        password: { type: "string", minLength: 3 },
+        id: { type: 'integer' },
+        firstName: { type: 'string', minLength: 1 },
+        lastName: { type: 'string', minLength: 1 },
+        email: { type: 'string', pattern: '^\\S+@\\S+\\.\\S+$' },
+        password: { type: 'string', minLength: 3 },
       },
     };
   }
@@ -29,18 +29,18 @@ module.exports = class User extends unique(BaseModel) {
     return {
       createdTasks: {
         relation: BaseModel.HasManyRelation,
-        modelClass: "Task.cjs",
+        modelClass: 'Task.cjs',
         join: {
-          from: "users.id",
-          to: "tasks.creatorId",
+          from: 'users.id',
+          to: 'tasks.creatorId',
         },
       },
       assignedTasks: {
         relation: BaseModel.HasManyRelation,
-        modelClass: "Task.cjs",
+        modelClass: 'Task.cjs',
         join: {
-          from: "users.id",
-          to: "tasks.executorId",
+          from: 'users.id',
+          to: 'tasks.executorId',
         },
       },
     };
@@ -50,7 +50,7 @@ module.exports = class User extends unique(BaseModel) {
     this.passwordDigest = encrypt(value);
   }
 
-  get fullName() {
+  get name() {
     return `${this.firstName} ${this.lastName}`;
   }
 

@@ -1,7 +1,7 @@
 extends ../layouts/application.pug
 
 block content
-	.row.justify-content-center
+	.row.justify-content-evenly
 		.card.shadow-sm.bg-light.bg-gradient.rounded-3
 			.card-body.row.p-4
 			.col-12.col-md-6.d-flex.align-items-center
@@ -9,9 +9,9 @@ block content
 				i.bi.bi-person-square(style='font-size: 3rem; color: DodgerBlue;')
 				h1.h3.mb-3.fw-bold= t('views.users.new.signUp')
 				+formFor()(action=route('users#create') method='post')
-					+input(user, 'Email', t('views.placeholders.email'),  errors)(type='text')
-					+input(user, 'Password', t('views.placeholders.password'), errors)(type='password')
-					+input(user, 'First Name', t('views.placeholders.firstName'), errors)(type='text')
-					+input(user, 'Last Name', t('views.placeholders.lastName'), errors)(type='text')
+					+input(user, 'email', t('views.placeholders.email'),  errors)(type='text')
+					+input(user, 'password', t('views.placeholders.password'), errors)(type='password')
+					+input(user, 'firstName', t('views.placeholders.firstName'), errors)(type='text')
+					+input(user, 'lastName', t('views.placeholders.lastName'), errors)(type='text')
 					+submit(user)(value=t('views.users.new.submit'))
 					p.my-3.text-muted &copy; 2022 Hexlet Ltd.

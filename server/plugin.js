@@ -2,22 +2,16 @@
 
 import { fileURLToPath } from 'url';
 import path from 'path';
-// @ts-ignore
 import fastifyStatic from 'fastify-static';
-// @ts-ignore
 import fastifyErrorPage from 'fastify-error-page';
-import Rollbar from 'rollbar';
+
 import pointOfView from 'point-of-view';
-// @ts-ignore
+import Rollbar from 'rollbar';
 import fastifyFormbody from 'fastify-formbody';
-// @ts-ignore
 import fastifySecureSession from 'fastify-secure-session';
-// @ts-ignore
 import fastifyPassport from 'fastify-passport';
-// @ts-ignore
 import fastifySensible from 'fastify-sensible';
 import { plugin as fastifyReverseRoutes } from 'fastify-reverse-routes';
-// @ts-ignore
 import fastifyMethodOverride from 'fastify-method-override';
 import fastifyObjectionjs from 'fastify-objectionjs';
 import qs from 'qs';
@@ -64,13 +58,14 @@ const setUpStaticAssets = (app) => {
 };
 
 const setupLocalization = async () => {
-  await i18next.init({
-    lng: 'ru',
-    fallbackLng: 'en',
-    resources: {
-      ru,
-    },
-  });
+  await i18next
+    .init({
+      lng: 'ru',
+      fallbackLng: 'en',
+      resources: {
+        ru,
+      },
+    });
 };
 
 const addHooks = (app) => {
@@ -131,9 +126,9 @@ const setupErrorHandler = (app) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-export default async (app, _options) => {
-  setupErrorHandler(app);
+export default async (app, options) => {
   registerPlugins(app);
+  setupErrorHandler(app);
 
   await setupLocalization();
   setUpViews(app);

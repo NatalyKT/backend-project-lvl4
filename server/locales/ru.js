@@ -6,29 +6,27 @@ export default {
     flash: {
       session: {
         create: {
-          success: 'Вы залогинены',
+          success: 'Авторизация прошла успешно',
           error: 'Неправильный емейл или пароль',
         },
         delete: {
-          success: 'Вы разлогинены',
+          success: 'Успешный выход из приложения',
         },
       },
       users: {
         create: {
-          error: 'Не удалось зарегистрировать',
+          error: 'Не удалось зарегистрировать пользователя',
           success: 'Пользователь успешно зарегистрирован',
         },
         update: {
           error: 'Не удалось изменить пользователя',
           success: 'Пользователь успешно изменён',
-          failure:
-            'Вы не можете редактировать или удалять другого пользователя',
+          failure: 'Вы не можете редактировать или удалять другого пользователя',
         },
         delete: {
           error: 'Не удалось удалить пользователя',
           success: 'Пользователь успешно удалён',
-          failure:
-            'Вы не можете редактировать или удалять другого пользователя',
+          failure: 'Вы не можете редактировать или удалять другого пользователя',
         },
       },
       statuses: {
@@ -74,7 +72,7 @@ export default {
           error: 'Не удалось удалить метку',
         },
       },
-      authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
+      authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь в системе',
     },
     layouts: {
       application: {
@@ -185,8 +183,7 @@ export default {
       welcome: {
         index: {
           hello: 'Task Manager',
-          description:
-            'Training project 4 for the profession "Node.js developer"',
+          description: 'Training project 4 for the profession "Node.js developer"',
           more: 'Узнать Больше',
         },
       },

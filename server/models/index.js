@@ -5,4 +5,9 @@ import TaskStatus from './TaskStatus.cjs';
 import Task from './Task.cjs';
 import Label from './Label.cjs';
 
-export default [User, TaskStatus, Task, Label];
+export default [
+  User,
+  TaskStatus,
+  Task,
+  Label,
+];

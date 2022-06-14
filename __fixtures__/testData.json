@@ -21,7 +21,7 @@
   },
   "statuses": {
     "new": {
-      "name": "Updated"
+      "name": "Assigned"
     },
     "existing": {
       "name": "Watched"
@@ -39,8 +39,8 @@
       "name": "Test",
       "description": "Run test and check functionality",
       "status_id": 1,
-      "creator_id": 1,
-      "executor_id": 3
+      "creator_id": 2,
+      "executor_id": 2
     }
   },
   "labels": {
@@ -48,7 +48,7 @@
       "name": "Question"
     },
     "existing": {
-      "name": "Latoya"
+      "name": "Enhancement"
     }
   }
 }

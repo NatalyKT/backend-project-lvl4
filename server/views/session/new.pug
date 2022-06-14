@@ -1,7 +1,7 @@
 extends ../layouts/application.pug
 
 block content
-	.row.justify-content-center
+	.row.justify-content-evenly
 		.card.shadow-sm.bg-light.bg-gradient.rounded-3
 			.card-body.row.p-4
 			.col-12.col-md-6.d-flex.align-items-center
@@ -9,7 +9,7 @@ block content
 				i.bi.bi-key(style='font-size: 3rem; color: DodgerBlue;')
 				h1.h3.mb-3.fw-bold= t('views.session.new.signIn')
 				+formFor()(action=route('session#create') method='post')
-					+input(signInForm, 'Email', t('views.placeholders.email'), errors)(type='text')
-					+input(signInForm, 'Password', t('views.placeholders.password'))(type='password')
+					+input(signInForm, 'email', t('views.placeholders.email'), errors)(type='text')
+					+input(signInForm, 'password', t('views.placeholders.password'))(type='password')
 					+submit(signInForm)(value=t('views.session.new.submit'))
 					p.my-3.text-muted &copy; 2022 Hexlet Ltd.
