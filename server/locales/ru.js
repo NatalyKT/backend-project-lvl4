@@ -2,15 +2,15 @@
 
 export default {
   translation: {
-    appName: 'Welcome on board!',
+    appName: 'Task Manager',
     flash: {
       session: {
         create: {
-          success: 'Вы успешно зашли в систему',
-          error: 'Неверный емейл или пароль',
+          success: 'Вы залогинены',
+          error: 'Неправильный емейл или пароль',
         },
         delete: {
-          success: 'Вы вышли из системы',
+          success: 'Вы разлогинены',
         },
       },
       users: {
@@ -72,7 +72,7 @@ export default {
           error: 'Не удалось удалить метку',
         },
       },
-      authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь',
+      authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
     layouts: {
       application: {
@@ -182,7 +182,7 @@ export default {
       },
       welcome: {
         index: {
-          hello: 'Nask Manager',
+          hello: 'Task Manager',
           description: 'Training project 4 for the profession "Node.js developer"',
           more: 'Интересно, пошли дальше ->',
         },
